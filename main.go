@@ -96,14 +96,8 @@ func beautify(code string) (string, error) {
 					return true
 				}
 
-				var obj interface{}
-				err := json.Unmarshal([]byte(textBody), &obj)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, "[WARN] ", err)
-					return true
-				}
-
-				prettyJSON, err := json.MarshalIndent(obj, "", "  ")
+				j := json.RawMessage(textBody)
+				prettyJSON, err := json.MarshalIndent(j, "", "  ")
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "[WARN] ", err)
 					return true
