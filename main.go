@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/printer"
 	"go/token"
 	"io"
-	"log"
 	"os"
 	"unicode/utf8"
 )
@@ -32,7 +32,10 @@ func main() {
 	}
 	defer output.Close()
 
-	formattedCode := beautify(string(code))
+	formattedCode, err := beautify(string(code))
+	if err != nil {
+		panic(err)
+	}
 
 	_, err = output.WriteString(formattedCode)
 	if err != nil {
@@ -42,7 +45,7 @@ func main() {
 
 const ignoreJsonLength = 20
 
-func beautify(code string) string {
+func beautify(code string) (string, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "", code, parser.ParseComments)
 	if err != nil {
@@ -81,8 +84,14 @@ func beautify(code string) string {
 	var buf bytes.Buffer
 	err = printer.Fprint(&buf, fset, f)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return buf.String()
+	// 謎の空行が入ることがあるのでgo fmtで整形する
+	formattedCode, err := format.Source(buf.Bytes())
+	if err != nil {
+		return "", err
+	}
+
+	return string(formattedCode), nil
 }
