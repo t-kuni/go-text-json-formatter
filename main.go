@@ -10,37 +10,71 @@ import (
 	"go/printer"
 	"go/token"
 	"io"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"unicode/utf8"
 )
 
 func main() {
-	input, err := os.Open("example/example.go")
-	if err != nil {
-		panic(err)
-	}
-	defer input.Close()
-
-	code, err := io.ReadAll(input)
-	if err != nil {
-		panic(err)
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: go run main.go <relative_path>")
+		return
 	}
 
-	output, err := os.Create("example/result.go")
+	relativePath := os.Args[1]
+	absolutePath, err := filepath.Abs(relativePath)
 	if err != nil {
-		panic(err)
+		fmt.Println("Error converting to absolute path:", err)
+		return
 	}
-	defer output.Close()
+
+	err = filepath.WalkDir(absolutePath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() && filepath.Ext(path) == ".go" {
+			err = processFile(path)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		fmt.Println("Error walking through the directory:", err)
+	}
+}
+
+func processFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+
+	code, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
 
 	formattedCode, err := beautify(string(code))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	_, err = output.WriteString(formattedCode)
+	err = os.WriteFile(path, []byte(formattedCode), fileInfo.Mode())
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 const ignoreJsonLength = 20
