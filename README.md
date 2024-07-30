@@ -41,7 +41,7 @@ Replace `X.X` with your Go version.
 ## Update
 
 ```bash
-go install -u github.com/t-kuni/go-text-json-formatter@X.X
+go install -a github.com/t-kuni/go-text-json-formatter@X.X
 ```
 
 ## Usage
