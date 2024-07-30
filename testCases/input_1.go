@@ -26,6 +26,19 @@ func hoge() {
   "a": "value2"
 }`
 
+	// 一部の記号がUnicodeエスケープされないこと
+	json = `
+{
+  "key": "< > &",
+  "dummy": "dummy"
+}`
+
+	// Unicodeエスケープはそのまま維持されること
+	json = `
+{
+  "key": "\u0022 \u005c \u002f \u0009"
+}`
+
 	// 20文字以下のJSONはフォーマットされないこと
 	json = `{"key1":"value1"}`
 

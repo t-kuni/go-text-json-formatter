@@ -13,6 +13,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -96,14 +97,21 @@ func beautify(code string) (string, error) {
 					return true
 				}
 
-				j := json.RawMessage(textBody)
-				prettyJSON, err := json.MarshalIndent(j, "", "  ")
+				var buf bytes.Buffer
+				encoder := json.NewEncoder(&buf)
+				encoder.SetEscapeHTML(false)
+				encoder.SetIndent("", "  ")
+
+				jsonRaw := json.RawMessage(textBody)
+				err := encoder.Encode(jsonRaw)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "[WARN] ", err)
 					return true
 				}
 
-				lit.Value = "`\n" + string(prettyJSON) + "`\n\n"
+				jsonText := strings.TrimSpace(buf.String())
+
+				lit.Value = fmt.Sprintf("`\n%s`\n\n", jsonText)
 			}
 		}
 		return true
