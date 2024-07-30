@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"os"
+	"runtime"
 	"testing"
 )
 
@@ -15,6 +16,8 @@ import (
 var testCases embed.FS
 
 func TestBeautify(t *testing.T) {
+	assert.Regexp(t, "^go1.22", runtime.Version())
+
 	for i := 1; ; i++ {
 		inputFilePath := fmt.Sprintf("testCases/input_%d.go", i)
 		expectFilePath := fmt.Sprintf("testCases/expect_%d.go", i)
