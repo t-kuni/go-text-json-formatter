@@ -16,7 +16,7 @@ import (
 var testCases embed.FS
 
 func TestBeautify(t *testing.T) {
-	assert.Regexp(t, "^go1.22", runtime.Version())
+	assert.Regexp(t, "^go1.18", runtime.Version())
 
 	for i := 1; ; i++ {
 		inputFilePath := fmt.Sprintf("testCases/input_%d.go", i)
