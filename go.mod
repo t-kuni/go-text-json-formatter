@@ -1,6 +1,6 @@
 module github.com/t-kuni/go-text-json-formatter
 
-go 1.22.4
+go 1.19
 
 require github.com/stretchr/testify v1.9.0
 
