@@ -1,10 +1,10 @@
 lang: [EN](README.md) [JA](README.ja.md)
 
-# Overview
+# 概要
 
-This is a CLI tool for formatting JSON strings within text literals (enclosed by `` ` ``).
+これはテキストリテラル（`` ` ``で囲まれたもの）内のJSON文字列を整形するCLIツールです。
 
-Before formatting:
+整形前：
 
 ```go
 	json = `
@@ -20,7 +20,7 @@ Before formatting:
      `
 ```
 
-After formatting:
+整形後：
 
 ```go
 	json = `
@@ -32,24 +32,24 @@ After formatting:
 }`
 ```
 
-## Installation
+## インストール
 
 ```bash
 go install github.com/t-kuni/go-text-json-formatter@X.X
 ```
 
-Replace `X.X` with your Go version.
+`X.X`は使用しているGoのバージョンに置き換えてください。
 
-## Update
+## 更新
 
 ```bash
 go install -a github.com/t-kuni/go-text-json-formatter@X.X
 ```
 
-## Usage
+## 使用方法
 
 ```bash
 go-text-json-formatter ./path/to/dir
 ```
 
-This command will format the JSON strings within text literals in Go files under the specified directory.
+このコマンドは指定されたディレクトリ下のGoファイルにあるテキストリテラル内のJSON文字列を整形します。
