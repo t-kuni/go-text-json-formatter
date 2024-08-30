@@ -49,6 +49,9 @@ go install -a github.com/t-kuni/go-text-json-formatter@X.X
 ## 使用方法
 
 ```bash
+# ファイルを指定した場合、単一のファイルをフォーマットします
+go-text-json-formatter ./path/to/file.go
+# ディレクトリを指定した場合、ディレクトリ内を再帰的にフォーマットします
 go-text-json-formatter ./path/to/dir
 ```
 
