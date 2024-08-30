@@ -14,6 +14,9 @@ git branch --list | grep '^..[0-9]\+\.[0-9]\+$' | while read -r branch; do
     # masterブランチの修正を取り込む
     git merge master
 
+    # 変更をpushする
+    git push origin $branch
+
     # masterブランチをチェックアウト
     git checkout master
 done
