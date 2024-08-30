@@ -11,6 +11,7 @@ import (
 	"go/token"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,32 +20,45 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go <relative_path>")
-		return
+		log.Fatal("Usage: go run main.go <relative_path>")
 	}
 
 	relativePath := os.Args[1]
 	absolutePath, err := filepath.Abs(relativePath)
 	if err != nil {
-		fmt.Println("Error converting to absolute path:", err)
-		return
+		panic(err)
 	}
 
-	err = filepath.WalkDir(absolutePath, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !d.IsDir() && filepath.Ext(path) == ".go" {
-			err = processFile(path)
+	fileInfo, err := os.Stat(absolutePath)
+	if err != nil {
+		panic(err)
+	}
+
+	if fileInfo.IsDir() {
+		err = filepath.WalkDir(absolutePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
+			if !d.IsDir() && filepath.Ext(path) == ".go" {
+				err = processFile(path)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			log.Fatal("Error walking through the directory:", err)
 		}
-		return nil
-	})
+	} else {
+		if filepath.Ext(absolutePath) != ".go" {
+			log.Fatal("The file is not a go file.")
+		}
 
-	if err != nil {
-		fmt.Println("Error walking through the directory:", err)
+		err = processFile(absolutePath)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
