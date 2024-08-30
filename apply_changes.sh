@@ -2,6 +2,9 @@
 
 # ^\d+\.\d+$ にマッチするブランチ名を取得しループ処理
 git branch --list | grep '^..[0-9]\+\.[0-9]\+$' | while read -r branch; do
+    echo ""
+    echo "-------- $branch --------"
+
     # ブランチ名の前にある空白をトリミング
     branch=$(echo "$branch" | xargs)
 
