@@ -42,7 +42,7 @@ func main() {
 			if !d.IsDir() && filepath.Ext(path) == ".go" {
 				err = processFile(path)
 				if err != nil {
-					return err
+					return fmt.Errorf("file:%s %w", path, err)
 				}
 			}
 			return nil
