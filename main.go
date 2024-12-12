@@ -42,7 +42,7 @@ func main() {
 			if !d.IsDir() && filepath.Ext(path) == ".go" {
 				err = processFile(path)
 				if err != nil {
-					return fmt.Errorf("file:%s %w", path, err)
+					return err
 				}
 			}
 			return nil
@@ -63,6 +63,8 @@ func main() {
 }
 
 func processFile(path string) error {
+	fmt.Printf("Processing %s\n", path)
+
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -79,14 +81,16 @@ func processFile(path string) error {
 		return err
 	}
 
-	formattedCode, err := beautify(string(code))
+	formattedCode, isSuccess, err := beautify(string(code))
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(path, []byte(formattedCode), fileInfo.Mode())
-	if err != nil {
-		return err
+	if isSuccess {
+		err = os.WriteFile(path, []byte(formattedCode), fileInfo.Mode())
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -94,7 +98,7 @@ func processFile(path string) error {
 
 const ignoreJsonLength = 20
 
-func beautify(code string) (string, error) {
+func beautify(code string) (string, bool, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "", code, parser.ParseComments)
 	if err != nil {
@@ -119,7 +123,7 @@ func beautify(code string) (string, error) {
 				jsonRaw := json.RawMessage(textBody)
 				err := encoder.Encode(jsonRaw)
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "[WARN] ", err)
+					fmt.Fprintln(os.Stderr, "[JSON PARSE][WARN] ", err)
 					return true
 				}
 
@@ -134,14 +138,15 @@ func beautify(code string) (string, error) {
 	var buf bytes.Buffer
 	err = printer.Fprint(&buf, fset, f)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 
 	// 謎の空行が入ることがあるのでgo fmtで整形する
 	formattedCode, err := format.Source(buf.Bytes())
 	if err != nil {
-		return "", err
+		fmt.Fprintln(os.Stderr, "[GO FORMAT][WARN] ", err)
+		return "", false, nil
 	}
 
-	return string(formattedCode), nil
+	return string(formattedCode), true, nil
 }

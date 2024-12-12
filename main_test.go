@@ -35,8 +35,9 @@ func TestBeautify(t *testing.T) {
 		}
 
 		t.Run(fmt.Sprintf("test case %d", i), func(t *testing.T) {
-			output, err := beautify(string(input))
+			output, isSuccess, err := beautify(string(input))
 			assert.NoError(t, err)
+			assert.Equal(t, true, isSuccess)
 			assert.Equal(t, string(expect), output)
 		})
 	}
