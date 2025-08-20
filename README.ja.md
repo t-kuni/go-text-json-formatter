@@ -61,6 +61,7 @@ go-text-json-formatter ./path/to/dir
 
 1. masterブランチからバージョンブランチ（`1.24`など）を作成
 2. リポジトリ全体の `1.22` を任意のバージョンに置換する
+  * go.modのパッチバージョンは 0 とする
 3. 以下のコマンドでテストを実行する（`1.22`の部分を任意のバージョンに置き換えること）
   * `docker run --rm -v "$(pwd)":/workspace -w /workspace golang:1.22 go test -v`
 
