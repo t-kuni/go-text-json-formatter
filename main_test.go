@@ -5,18 +5,19 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"os"
 	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 //go:embed testCases/*
 var testCases embed.FS
 
 func TestBeautify(t *testing.T) {
-	assert.Regexp(t, "^go1.22", runtime.Version())
+	assert.Regexp(t, "^go1.24", runtime.Version())
 
 	for i := 1; ; i++ {
 		inputFilePath := fmt.Sprintf("testCases/input_%d.go", i)
